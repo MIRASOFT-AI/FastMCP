@@ -23,6 +23,7 @@ def add_task(title: str, description: str = "") -> dict:
     tasks.append(task)
     task_id_counter += 1
     
+    print(f"Added task: {task['id']} - {task['title']}")
     return task
 
 @mcp.tool()
@@ -47,6 +48,23 @@ def delete_task(task_id: int) -> dict:
             return {"success": True, "deleted": deleted_task}
     
     return {"success": False, "error": f"Task {task_id} not found"}
+
+@mcp.tool()
+def list_all_tasks() -> dict:
+    """List all available tasks"""
+    if not tasks:
+        return {"tasks": [], "message": "No tasks found"}
+    
+    result = "Current Tasks:\n\n"
+    for task in tasks:
+        status_emoji = "✅" if task["status"] == "completed" else "⏳"
+        result += f"{status_emoji} [{task['id']}] {task['title']}\n"
+        if task["description"]:
+            result += f"   Description: {task['description']}\n"
+        result += f"   Status: {task['status']}\n"
+        result += f"   Created: {task['created_at']}\n\n"
+    
+    return result
 
 @mcp.resource("tasks://all")
 def get_all_tasks() -> str:
